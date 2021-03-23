@@ -1,0 +1,63 @@
+Administrador de Dependencias en php
+
+Permite instalar librerias
+
+Administra cada dependencia en cada proyecto
+
+Equivalente a NPM pero para PHP
+
+
+
+sudo apt install composer
+
+https://laravel.com/docs/7.x
+
+composer
+
+// se crea el archivo composer.json como sigue
+*************************************************************************************************************
+
+:~/lampstack-7.2.24-0/apache2/htdocs/php-oop$ composer init
+
+  Welcome to the Composer config generator
+
+This command will guide you through creating your composer.json config.
+
+Package name (<vendor>/<name>) [irvin/php-oop]:
+Description []: Aprendiendo Namespaces y Autoload
+Author [, n to skip]: Luis <correo@correo.com>
+Minimum Stability []:
+Package Type (e.g. library, project, metapackage, composer-plugin) []:
+License []:
+
+Define your dependencies.
+
+Would you like to define your dependencies (require) interactively [yes]? no
+Would you like to define your dev dependencies (require-dev) interactively [yes]? no
+
+{
+    "name": "irvin/php-oop",
+    "description": "Aprendiendo Namespaces y Autoload",
+    "authors": [
+        {
+            "name": "Luis",
+            "email": "correo@correo.com"
+        }
+    ],
+    "require": {}
+}
+
+Do you confirm generation [yes]? yes
+
+*************************************************************************************************************
+
+SE REALZARON LOS CAMBIOS EN composer.json
+
+*************************************************************************************************************
+Una vez realizados los cambios en composer.json en terminal poner:
+
+composer update
+
+Se crea la carpeta vendor
+
+*************************************************************************************************************

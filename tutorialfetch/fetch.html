@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scle=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Solicitud Fetch</title>
+  </head>
+  <body>
+
+
+    <script>
+    let data = new FormData();
+
+    data.append('a', 5);
+    data.append('b', 15);
+
+      // fetch regrera objeto tipo promise
+      fetch('servidor.php', {
+        method: 'POST',
+        body: data
+      })
+      .then(function(response){
+        if (response.ok) {
+          //console.log(response.text()); //puede ser json o otros mas console.log(response.json());
+          return response.text();
+        } else {
+          throw "Error en la llamada";
+        }
+      })
+      .then(function(texto){
+        console.log(texto);
+      })
+      .catch(function(error){
+        console.log(error);
+      });
+    </script>
+
+  </body>
+</html>

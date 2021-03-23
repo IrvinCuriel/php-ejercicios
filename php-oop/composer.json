@@ -1,0 +1,16 @@
+{
+    "name": "irvin/php-oop",
+    "description": "Aprendiendo Namespaces y Autoload",
+    "authors": [
+        {
+            "name": "Luis",
+            "email": "correo@correo.com"
+        }
+    ],
+    "require": {},
+    "autoload": {
+      "psr-4": {
+        "App\\" : "./clases"
+      }
+    }
+}
