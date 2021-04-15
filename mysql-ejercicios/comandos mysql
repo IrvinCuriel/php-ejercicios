@@ -1,0 +1,308 @@
+mysql -u root -p
+Enter password: root
+
+SHOW DATABASES;
+CREATE DATABASE appsalon;
+USE appsalon;
+SHOW TABLES;
+
+****************************************************************************************************************
+			tipos de datos
+Números y Enteros:
+INT
+TINYINT
+SAMLLINT
+MEDIUMINT
+BIGINT
+
+Números con decimales:
+FLOAT
+BOUBLE
+DECIMAL (dinearo)
+
+Textos y Datos Binarios
+VARCHAR
+CHAR (como un password encriptado)
+TEXT (como una entrada de blog)
+ENUM
+BLOB
+
+Fecha y Hora:
+DATE 
+TIME
+DATETIME
+TIMESTAMP
+YEAR
+****************************************************************************************************************
+
+CREATE TABLE servicios (
+ -> id INT(11) NOT NULL AUTO_INCREMENT,
+ -> nombre VARCHAR(60) NOT NULL,
+ -> precio DECIMAL(6,2) NOT NULL,
+ -> PRIMARY KEY (id)
+ -> );
+
+SHOW TABLES;
+DESCRIBE servicios;
+
+****************************************************************************************************************
+// Insertar un solo valor
+INSERT INTO servicios (nombre, precio) VALUES ("Corte de cabello de adulto", 80);
+
+****************************************************************************************************************
+// Insertar mas de un valor
+INSERT INTO servicios (nombre, precio) VALUES
+ -> ('Peinado Mujer', 80),
+ -> ('Peinado Hombre', 60);
+
+****************************************************************************************************************
+//Seleccionar Elementos
+SELECT * FROM servicios;
+SELECT nombre FROM servicios;
+SELECT nombre, precio FROM servicios;
+SELECT id, nombre, precio FROM servicios;
+SELECT id, nombre, precio FROM servicios ORDER BY precio;
+SELECT id, nombre, precio FROM servicios ORDER BY precio ASC;
+SELECT id, nombre, precio FROM servicios ORDER BY precio DESC;
+SELECT id, nombre, precio FROM servicios ORDER BY id DES;
+SELECT id, nombre, precio FROM servicios ORDER BY id ASC;
+SELECT id, nombre, precio FROM servicios LIMIT 2;
+SELECT id, nombre, precio FROM servicios WHERE id = 2;
+SELECT * FROM servicios WHERE precio > 80;
+SELECT * FROM servicios WHERE precio >= 80;
+SELECT * FROM servicios WHERE precio BETWEEN 100 AND 200;
+
+****************************************************************************************************************
+//Actualizar un registro
+UPDATE servicios SET precio = 70 WHERE id = 2;
+UPDATE servicios SET nombre = "Corte de cabello Actualizado" WHERE id = 2;
+UPDATE servicios SET nombre = "Corte de cabello adulto actualizado", precio = 120 WHERE id = 1;
+
+****************************************************************************************************************
+//Eliminar registros
+DELETE FROM servicios WHERE id = 1;
+DELETE FROM servicios WHERE id = 4;
+
+****************************************************************************************************************
+//Modificar base de datos
+DESCRIBE servicios;
+ALTER TABLE servicios ADD descripcion VARCHAR(100) NOT NULL;
+DESCRIBE servicios;
+SELECT * FROM servicios;
+
+*****IMPORTANTE******
+ALTER TABLE servicios CHANGE descripcion nuevonombre VARCHAR(11) NOT NULL;
+NOTA: NO SE PUEDE CAMBIAR EL TYPE DE DATO SOLO LA LONGITUD
+EN ESTE CASO ES VARCAHR(100) Y SE CAMBIA A VARCHAR(50)
+
+INSERT INTO servicios (nombre, precio, nuevonombre) VALUES ('Peinado', 100, 'Hola');
+
+ALTER TABLE servicios CHANGE nuevonombre descripcion VARCHAR(11) NOT NULL;
+
+***ELIMINAR COLUMNA***
+ALTER TABLE servicios DROP COLUMN descripcion;
+SELECT * from servicios;
+
+****************************************************************************************************************
+//Eliminar tablas
+SHOW TABLES;
+DROP TABLE servicios;
+SHOW TABLES;
+
+****************************************************************************************************************
+
+CREATE TABLE servicios (
+ -> id INT(11) NOT NULL AUTO_INCREMENT,
+ -> nombre VARCHAR(60) NOT NULL;
+ -> precio DECIMAL (6, 2) NOT NULL;
+ -> PRIMARY KEY (id)
+ -> );
+SHOW TABLES;
+DESCRIBE servicios;
+
+CREATE TABLE reservaciones (
+ -> id INT(11) NOT NULL AUTO_INCREMENT,
+ -> nombre VARCHAR(60) NOT NULL,
+ -> apellido VARCHAR(60) NOT NULL,
+ -> hora TIME DEFAULT NULL,
+ -> fecha DATE DEFAULT NULL,
+ -> servicios VARCHAR(255) NOT NULL,
+ -> PRIMARY KEY (id)
+ -> );
+SHOW TABLES;
+
+****************************************************************************************************************
+//Funciones agregadoras
+SELECT COUNT(id), fecha 
+ -> FROM reservaciones
+ -> GROUP BY fecha
+ -> ORDER BY COUNT(id) DESC;
+SELECT SUM(precio) AS totalServicios FROM servicios;
+SELECT MIN(precio) AS precioMenor FROM servicios;
+SELECT MAX(precio) AS precioMenor FROM servicios;
+
+****************************************************************************************************************
+//Buscar en SQL
+SELECT * FROM servicios WHERE nombre LIKE 'Corte%';
+   *%Corte significa que lo que buscamos inicia con la palabra corte
+
+SELECT * FROM servicios WHERE nombre LIKE '%Corte';
+SELECT * FROM servicios WHERE nombre LIKE '%Corte%';
+
+****************************************************************************************************************
+//Concatenar en SQL
+SELECT CONCAT(nombre, ' ', apellido) AS nombreCompleto FROM reservaciones;	
+
+SELECT * FROM reservaciones
+ -> WHERE CONCAT(nombre, " ", apellido) Like '%Ana Preciado%'; 
+
+SELECT hora, fecha, CONCAT(nombre, " ", apellido) AS 'Nombre Completo' FROM reservaciones WHERE CONCAT(nombre, " ", apellido) Like '%Ana Preciado%';
+
+****************************************************************************************************************
+//Multiples condiciones IN, AND
+SELECT * FROM reservaciones WHERE id IN (1,3);
+SELECT * FROM reservaciones WHERE fecha = "2021-06-28";
+SELECT * FROM reservaciones WHERE fecha = "2021-06-28" AND id = 1;
+
+****************************************************************************************************************
+		NORMALIZACIÓN
+// Primera regla - 1NF
+   Cada columa debe tener solo 1 valor y no debe haber grupos repetidos.
+
+// Segunda regla - 2NF
+   Una vez aplicada la primer regla, pasamos a la segunda
+   2NF se utiliza en las llaves primarias compuestas
+   llaves primarias
+
+// Terce regla - 3NF
+   Tiene que ver como se relacionan los datos.
+   Mientras que 2NF se enfoca en la llave compuesta, la 3NF se enfoca en los demás datos que no forman parte de la llave compuesta.
+
+****************************************************************************************************************
+// Diagramas ER - Diagramas de Entidad Relación 
+   Darán una idea grafica de las Entidades (tablas) y sus atributos.
+   Ayudan a conocer como se relacioan los datos.
+   
+// Cardinalidad
+   Número máximo de veces que una instancia se relaciona con otra
+   Máximo de veces que 2 tablas se pueden relacionar
+****************************************************************************************************************
+// 
+
+CREATE TABLE clientes (
+-> id INT(11) NOT NULL AUTO_INCREMENT,
+-> nombre VARCHAR(60) NOT NULL,
+-> apellido VARCHAR(60) NOT NULL,
+-> telefono VARCHAR(10) NOT NULL,
+-> email VARCHAR(30) NOT NULL UNIQUE,
+-> PRIMARY KEY (id)
+-> );
+SHOW TABLES;
+
+INSERT INTO clientes (nombre, apellido, telefono, email) VALUES
+-> ("Luis", "Curiel", "123456789", "correo@correo.com");
+****************************************************************************************************************
+// Relacionar dos tablas
+SHOW TABLAS;
+SELECT * FROM clientes;
+SELECT * FROM servicios;
+CREATE TABLE citas (
+-> id INT(11) NOT NULL AUTO_INCREMENT,
+-> fecha DATE NOT NULL,
+-> hora TIME NOT NULL,
+-> clienteId INT(11) NOT NULL,
+-> PRIMARY KEY (id),
+-> KEY clienteId (clienteId),
+-> CONSTRAINT cliente_FK
+-> FOREIGN KEY (clienteId)
+-> REFERENCES clientes (id)
+-> );
+SHOW TABLES;
+DESCRIBE citas;
+DESCRIBE clientes;
+SELECT * FROM clientes;
+
+INSERT INTO citas ( fecha, hora, clienteId ) VALUES
+-> ('2021-06-28', '10:30:00', 1);
+
+SELECT * FROM clientes;
+SELECT * FROM citas;
+****************************************************************************************************************
+// Unir 2 tablas en una cosulta
+SELECT * FROM citas
+-> INNER JOIN clientes ON clientes.id = citas.clienteId;
+
+SELECT * FROM citas
+-> LEFT JOIN clientes ON clientes.id = citas.clienteId;
+
+SELECT * FROM citas
+-> RIGHT JOIN clientes ON clientes.id = citas.clienteId;
+
+INSERT INTO clientes (nombre, apellido, telefono, email) VALUES
+-> ("Gabriel", "Perez", "987654321", "gabriel@gabriel.com");
+
+SELECT * FROM clientes;
+SELECT * FROM citas;
+
+****************************************************************************************************************
+//Crear tabla pivote
+
+CREATE TABLE citasServicios (
+-> id INT(11) AUTO_INCREMENT,
+-> citaId INT(11) NOT NULL,
+-> PRIMARY KEY (id),
+-> KEY citaId (citaId),
+-> CONSTRAINT citas_FK
+-> FOREIGN KEY (citaId)
+-> REFERENCES citas (id),
+-> KEY servicioId (servicioId),
+-> CONSTRAINT servicios_FK
+-> FOREIGN KEY (servicioId)
+-> REFERENCES servicios (id)
+-> );
+SHOW TABLES;
+DESCRIBE citasServicios;
+SELECT * FROM citas;
+SELECT * FROM servicios;
+
+INSERT INTO citasServicios (citaId, servicioId) VALUES
+-> (2, 8);
+
+SELECT * FROM citasServicios;
+****************************************************************************************************************
+// Consular Tabla Pivote
+SELECT * FROM citas;
+SELECT * FROM servicios;
+SELECT * FROM citasServicios;
+
+SELECT * FROM citasServicios 
+-> LEFT JOIN citas ON citas.id = citasServicios.citaId
+-> LEFT JOIN servicios ON servicios.id = citasServicios.servicioId;
+
+
+INSERT INTO citasServicios (citaId, servicioId) VALUES (2, 3);
+INSERT INTO citasServicios (citaId, servicioId) VALUES (2, 4);
+SELECT * FROM citasServicios;
+
+
+SELECT * FROM citasServicios 
+-> LEFT JOIN citas ON citas.id = citasServicios.citaId
+-> LEFT JOIN servicios ON servicios.id = citasServicios.servicioId;
+
+
+****************************************************************************************************************
+// Multiples JOIN
+SELECT * FROM citasServicios 
+-> LEFT JOIN citas ON citas.id = citasServicios.citaId
+-> LEFT JOIN clientes ON citas.clienteId = clientes.Id
+-> LEFT JOIN servicios ON servicios.id = citasServicios.servicioId;
+****************************************************************************************************************
+// 
+
+****************************************************************************************************************
+
+
+****************************************************************************************************************
+
+****************************************************************************************************************
+
