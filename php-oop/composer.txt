@@ -61,3 +61,117 @@ composer update
 Se crea la carpeta vendor
 
 *************************************************************************************************************
+
+
+
+*************************************************************************************************************
+*************************************************************************************************************
+*************************************************************************************************************
+En carpeta Includes->app.php
+<?php
+
+define('FUNCIONES_URL', __DIR__ . "/funciones/funciones.php");
+define('TEMPLATES_URL', __DIR__ . "/templates");
+
+---------------------------------------------------------
+En carpeta Includes->app.php
+<?php
+
+require 'funciones.php';
+require 'config/database.php';
+require __DIR__ . "/../vendor/autoload.php";
+
+use App\Propiedad;
+$propiedad = new Propiedad;
+
+var_dump($propiedad);
+
+NOTA: en Index.php colocar :
+
+<?php
+require 'includes/app.php';
+*************************************************************************************************************
+En carpeta Includes->funciones.php
+<?php
+
+include 'app.php';
+
+function incluirTemplate(string $nombre, bool $inicio = false)
+{
+    include TEMPLATES_URL . "/${nombre}.php";
+}
+
+function estaAutenticado() : bool {
+    session_start();
+
+    // echo "<pre>";
+    // var_dump($_SESSION);
+    // echo "</pre>";
+    
+    if($_SESSION['login']) {
+        return true;
+    } 
+
+    return false;
+}
+
+---------------------------------------------------------
+En carpeta Includes->funciones.php
+<?php
+
+
+define('FUNCIONES_URL', __DIR__ . "/funciones/funciones.php");
+define('TEMPLATES_URL', __DIR__ . "/templates");
+
+function incluirTemplate(string $nombre, bool $inicio = false)
+{
+    include TEMPLATES_URL . "/${nombre}.php";
+}
+
+function estaAutenticado() : bool {
+    session_start();
+
+    // echo "<pre>";
+    // var_dump($_SESSION);
+    // echo "</pre>";
+    
+    if($_SESSION['login']) {
+        return true;
+    } 
+
+    return false;
+}
+
+
+
+*************************************************************************************************************
+
+se crea carpeta clases
+clases.php->propiedad.php:
+
+<?php
+namespaces App;
+
+class Propiedad {
+}
+
+*************************************************************************************************************
+
+includes->config->database.php
+
+<?php
+
+function conectarDb(): mysqli
+{
+    $db = mysqli_connect('localhost', 'root', '132456', 'bienesraices_crud');
+
+    if (!$db) {
+        echo "Error: No se pudo conectar a MySQL.";
+        echo "errno de depuración: " . mysqli_connect_errno();
+        echo "error de depuración: " . mysqli_connect_error();
+        exit;
+    }
+
+    return $db;
+}
+
