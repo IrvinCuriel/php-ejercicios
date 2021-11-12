@@ -1,3 +1,8 @@
+sudo mysql -u root mysql  *
+mysql -u root -p
+mysql -u root
+
+
 mysql -u root -p
 Enter password: root
 
@@ -18,10 +23,10 @@ BIGINT
 Números con decimales:
 FLOAT
 BOUBLE
-DECIMAL (dinearo)
+DECIMAL (dinearo) ejemplo: precio DECIMAL (5, 2) 100.00
 
 Textos y Datos Binarios
-VARCHAR
+VARCHAR (optimiza espacio a diferencia de CHAR)
 CHAR (como un password encriptado)
 TEXT (como una entrada de blog)
 ENUM
@@ -91,7 +96,7 @@ DESCRIBE servicios;
 SELECT * FROM servicios;
 
 *****IMPORTANTE******
-ALTER TABLE servicios CHANGE descripcion nuevonombre VARCHAR(11) NOT NULL;
+ALTER TABLE servicios CHANGE descripcion nuevonombre VARCHAR(50) NOT NULL;
 NOTA: NO SE PUEDE CAMBIAR EL TYPE DE DATO SOLO LA LONGITUD
 EN ESTE CASO ES VARCAHR(100) Y SE CAMBIA A VARCHAR(50)
 
@@ -130,6 +135,14 @@ CREATE TABLE reservaciones (
  -> PRIMARY KEY (id)
  -> );
 SHOW TABLES;
+
+****************************************************************************************************************
+
+SELECT * FROM servicios WHERE precio > 80;
+SELECT * FROM servicios WHERE precio >= 80;
+SELECT * FROM servicios WHERE precio <= 80;
+SELECT * FROM servicios WHERE precio = 80;
+SELECT * FROM servicios WHERE precio BETWEEN 100 AND 200;
 
 ****************************************************************************************************************
 //Funciones agregadoras
@@ -206,6 +219,7 @@ INSERT INTO clientes (nombre, apellido, telefono, email) VALUES
 SHOW TABLAS;
 SELECT * FROM clientes;
 SELECT * FROM servicios;
+
 CREATE TABLE citas (
 -> id INT(11) NOT NULL AUTO_INCREMENT,
 -> fecha DATE NOT NULL,
@@ -217,6 +231,7 @@ CREATE TABLE citas (
 -> FOREIGN KEY (clienteId)
 -> REFERENCES clientes (id)
 -> );
+
 SHOW TABLES;
 DESCRIBE citas;
 DESCRIBE clientes;
@@ -250,6 +265,7 @@ SELECT * FROM citas;
 CREATE TABLE citasServicios (
 -> id INT(11) AUTO_INCREMENT,
 -> citaId INT(11) NOT NULL,
+-> servicioId INT(11) NOT NULL,
 -> PRIMARY KEY (id),
 -> KEY citaId (citaId),
 -> CONSTRAINT citas_FK
@@ -260,6 +276,7 @@ CREATE TABLE citasServicios (
 -> FOREIGN KEY (servicioId)
 -> REFERENCES servicios (id)
 -> );
+
 SHOW TABLES;
 DESCRIBE citasServicios;
 SELECT * FROM citas;
