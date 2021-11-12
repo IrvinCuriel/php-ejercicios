@@ -1,0 +1,640 @@
+*****************************************************************************
+				ESQUEMA HR
+
+sqlplus
+
+Enter user-name: sys as sysdba
+Enter password: "contraseña definida durante la instalacion"
+
+SQL> show user;
+USER is "sys"
+
+Para desbloquear cuebta hr:
+
+SQL> ALTER USER hr IDENTIFIED BY 123 ACCOUNT UNLOCK;
+
+Para desconectarnos:
+SQL> disconnect
+
+limpiar pantalla:
+SQL> host cls
+
+conectarnos con hr
+SQL> connect
+Enter user-name: hr
+Enter password: 123
+
+SQL> show user;
+USER is "HR"
+
+SQL> SELECT * FROM countries;
+
+
+*****************************************************************************
+				Vistazo a SQL Plus
+
+Logearse como superusuario:
+c:\user>sqlplus / as sysdba
+
+SQL> SELECT employee_id, firts_name, last_name
+ 2 FROM employees
+ 3
+ 
+Listar buffer:
+SQL> L
+ 1 SELECT employee_id, firts_name, last_name
+ 2 FROM employees
+
+Guardar contenido del buffer a un archivo 
+SQL> SAVE myfile
+Created file myfule.sql
+
+limpiar pantalla:
+SQL> host cls
+
+Editar contenido del archivo:
+SQL> EDIT myfile
+
+"Se abre el buffer en el editor" añadimos un Where
+
+SELECT employee_id, firts_name, last_name
+FROM employees
+WHERE employee_id = 106
+/
+
+GUARDAR EL ARCHIVO CON EL EDITOR
+
+Traer contenido del archivo en buffer
+SQL>GET myfile
+ 1 SELECT employee_id, firts_name, last_name
+ 2 FROM employees
+ 3 WHERE employee_id = 106
+0
+
+Verificar con li (listado) o L
+SQL> li
+ 1 SELECT employee_id, firts_name, last_name
+ 2 FROM employees
+ 3 WHERE employee_id = 106
+ 
+Cambiar valor 106 a 110 con change
+SQL> C/106/110
+ 3 WHERE employee_id = 110
+ 
+ Guardar cambios de buffer al archivo "myfile"
+SQL> SAVE myfile REPLACE
+wrote file myfile.sql
+
+Mostar contenido de la ejecucion:
+
+Primero recordar que estamos logueados como superusuarios
+entonces
+indicar a que esquema pertence la tabla que nos estamos refiriendo 
+
+SQL> edit myfile
+editamos y guardamos:
+SELECT employee_id, firts_name, last_name
+FROM hr.employees
+WHERE employee_id = 106
+/
+
+EJECUTAMOS:
+SQL> start myfile
+
+
+Añadir un cambio al final del archivo:
+SQL> C/110/106
+ 3 WHERE employee_id = 106
+SQL> SAVE myfile APPEND
+Appended file to myfile.sql
+
+EJECUTAMOS CON @ como alernativa de START
+SQL> @myfile
+
+
+*****************************************************************************
+			SELECT
+
+SELECT * FROM jobs;
+DESCRIBE jobs;
+SELECT job_id, min_salary FROM jobs;
+
+ALIAS
+SELECT job_id AS Job, min_salary AS minimun_salary FROM jobs;
+para respetr matusculas y minusculas O espacios poner comillas ejemplo:
+SELECT job_id AS "Job", min_salary AS "minimun salary" FROM jobs;
+
+DISTINTC
+SELECT DISTINC department_id FROM employees;
+SELECT DISTINC department_id, job_id FROM  employees; (muestra la combinacion de estas dos columnas que sean diferentes)
+
+---------------------------------------------------------------------------
+		TABLA DUAL
+
+SELECT * FROM dual;
+SELECT 3 * 4 FROM dual;
+SELECT 'Hola mundo' FROM dual;
+SELECT SYSDATE FROM dual;
+SELECT USER FROM dual;
+SELECT 'Esta es un a cadena' || ' ' || 'otra cadena de prueba' FROM dual;
+SELECT 'Usuario: ' || USER || ', el dia de hoy es: ' || SYSDATE FROM dual;
+SELECT ('Usuario: ' || USER || ', el dia de hoy es: ' || SYSDATE)  AS "Encabezado" FROM dual;
+SELECT 'I''m ' || USER FROM dual;
+
+----------------------------------------------------------------------------
+		WHERE
+
+SELECT first_name || ' ' || last_name "Name", department_id FROM employese;
+
+SELECT first_name || ' ' || last_name "Name", department_id FROM employese WHERE department_id = 90;
+
+SELECT department_name FROM departments WHERE department_id = 90;
+
+SELECT * FROM job_history WHERE job_id = 'AC_ACCOUNT';
+
+Diferente <>, !=,  =
+menor que <
+mayor que >
+menor o igual <=
+mayor o igual >=
+
+SELECT first_name || ' ' || last_name "NAME", commission_pct FROM employees WHERE comission_pct >= 0.35;
+
+IN
+SELECT first_name || ' ' || last_name "Name", department_id FROM employese WHERE department_id IN (10, 20, 50);
+
+----------------------------------------------------------------------------
+		MAS FILTROS
+		
+SELECT first_name, department_id FROM employees WHERE NOT (department_id >= 30);
+
+SELECT first_name, salary FROM employees WHERE last_name = 'Smith' AND salary > 7500;
+
+SELECT first_name, last_name FROM employees WHERE first_name = 'Kelly' OR last_name = 'Smith';
+Nota: imprtante mayusculas o minusulas en el campo nombre
+
+SELECT firts_name, last_name, salary FROM employees WHERE salary BETWEEN 5000 AND 6000;
+
+SELECT firts_name, last_name, salary FROM employees WHERE salary >= 5000 AND salary <= 6000;
+
+SELECT fist_name, last_name FROM employees WHERE firts_name LIKE 'Su%';
+SELECT fist_name, last_name FROM employees WHERE firts_name LIKE '%o';
+SELECT fist_name, last_name FROM employees WHERE firts_name LIKE 'C%a';
+SELECT fist_name, last_name FROM employees WHERE firts_name LIKE '%m%';
+
+comparacion contra valor null
+forma incorrecta
+SELECT fist_name FROM employees WHERE department_id = NULL; 
+forma crrecta:
+SELECT fist_name FROM employees WHERE department_id IS NULL;
+SELECT fist_name FROM employees WHERE department_id IS NOT NULL; 
+
+--------------------------------------------------------------------------------
+		ORDEY BY
+
+SELECT * FROM countries ORDER BY country_name;
+SELECT * FROM countries ORDER BY region_id;
+SELECT * FROM countries ORDER BY region_id, country_name;
+SELECT first_name || ' ' || last_name "Employee name" FROM employees WHERE department_id = 90 ORDER BY last_name;
+SLECT last_name FROM employees ORDER BY last_name DESC;
+SLECT last_name, fist_name FROM employees ORDER BY last_name DESC, first_name ASC;
+SELECT first_name, hire_date, salary, manager_id mid FROM employees WHERE department_id IN (110, 100) ORDER BY 4, 2, 3;
+SELECT last_name, comission_pct, FROM employees WHERE last_name LIKE 'R%' ORDEY BY commission_pct ASC, last_name DESC; 
+
+*****************************************************************************
+				FUNCIONES
+				
+		CONCAT
+		
+SELECT 'Esta es un a cadena' || 'otra cadena' FROM dual;
+
+-- CONCAT(x,y)
+SELECT CONCAT('Esta es una cadena', ' otra cadena') FROM dual;
+SELECT CONCAT(CONCAT('UNO', ' DOS'), (' TRES') FROM dual;
+SELECT CONCAT(CONCAT(first_name, ' '), last_name) employee_name, first_name || ' ' || last_name AS employee_name_2 FROM employees WHERE department_id = 30;
+
+--------------------------------------------------------------------------------
+		SUBSTR
+		
+-- SUBSTR(C1, X, [,Y])
+SELECT SUBSTR('CADENA MUY LARGA DE EJEMPLO', 10) FROM DUAL;
+SELECT SUBSTR('CADENA MUY LARGA DE EJEMPLO', 10, 7) FROM DUAL;
+SELECT SUBSTR(10000 - 8, 3, 2) FROM dual;
+SELECT SUBSTR(SYSDATE, 4, 3) FROM dual;
+SELECT SYSDATE, SUBSTR(SYSDATE, 4, 3) FROM dual;
+SLELCT SUBSTR('1#3#5#7#9#' 5) FROM dual;
+SLELCT SUBSTR('1#3#5#7#9#' 2, 6) FROM dual;
+SELECT 'Nombre: ' || SUBSTR(fist_name, 1, 1) || '. ' || last_name "Nombre" FROM employee WHERE SUBSTR(job_id, 1, 2) = 'AD';
+
+-------------------------------------------------------------------------------
+		SUBSTR PARTE 2
+
+SELECT file_name FROM dba_data_files;
+C:\APP\ORADATA\ORCL\USERS01.DBF
+C:\APP\ORADATA\ORCL\UNDOTBS01.DBF
+C:\APP\ORADATA\ORCL\SYSAUX01.DBF
+C:\APP\ORADATA\ORCL\SYSTEMO1.DBF
+C:\APP\ORADATA\ORCL\EXAMPLE01.DBF
+SELECT INSTR(file_name, '\'), file_name FROM dbs_data_files;
+SELECT INSTR(file_name, '\' -1), file_name FROM dbs_data_files;
+SELECT SUBSTR(file_name, INSTR(file_name, '\', -1) + 1) FROM dbs_data_files;
+
+-------------------------------------------------------------------------------
+		FUNCION INSTR
+		
+-- INSTR(C1, C2)
+SELECT INSTR('Hola mundo', 'mu') FROM dual;
+SELECT INSTR(SYSDATE, '15') FROM dual;
+SELECT SYSDATE, INSTR(SYSDATE, '15') FROM dual;
+SELECT INSTR('1#3#5#7#9#', '#') FROM dual;
+
+-- INSTR(C1, C2[,i,[j]])
+SELECT INSTR('1#3#5#7#9#', '#', 5) FROM dual;
+SELECT INSTR('1#3#5#7#9#', '#', 3, 4) FROM dual;
+
+SELECT * FROM departments WHERE instr(department_name, 'on') = 2;
+
+-------------------------------------------------------------------------------
+		FUNCION LENGTH
+		
+-- LENGTH(c)
+SELECT LENGTH('esta es una cadena') FROM dual;
+SELECT LENGTH('1 + 2 = ' || 3) FROM dual;
+SELECT LENGTH(SYSDATE) FROM dual;
+SELECT * FROM countries WHERE LENGTH(country_name) > 10;
+SELECT * FROM countries WHERE LENGTH(country_name) <= 10;
+
+-------------------------------------------------------------------------------
+		FUNCION LOWER
+		
+-- LOWER(C)
+SELECT LOWER('Hola munDo') FROM dual;
+SELECT LOWER(30 + 50) FROM dual;
+SELECT LOWER('La suma ' || ' 10 + 10 ' || '=' || ' 20') FROM dual;
+SELECT LOWER(SYSDATE) FROM dual;
+SELECT first_name, last_name, LOWER(last_name) FROM employees WHERE LOWER(last_name) LIKE '%ur%';
+
+-------------------------------------------------------------------------------
+		FUNCIONES LPAD RPAD
+		
+-- LPAD(c, i[, c2])
+-- RPAD(c, i[, c2])
+SELECT LPAD('cadena', 10), RPAD('cadena', 10) FROM dual;
+SELECT LPAD('cadena', 15, '*'), RPAD('cadena', 15, '*') FROM dual;
+SLECT LPAD(SYSDATE, 14, '-?'), RPAD(SYSDATE, 14, '-?') FROM dual;
+SELECT LPAD(last_name, 10) lpad_name, LPAD(salary, 8, '*') lpad_salary FROM employees WHERE last_name LIKE 'j%';
+
+-------------------------------------------------------------------------------
+		FUNCION REPLACE
+
+-- REPALCE(c1, c2[,c3])
+SELECT REPLACE('downtown', 'down', 'up') FROM dual;
+SELECT REPLACE('downtown', 'down') FROM dual;
+SELECT REPLACE(10000 - 3, '9', '85') FROM dual;
+SELECT REPLACE(SYSDATE, '01', '08') FROM dual;
+SELECT last_name, salary, REPLACE(salary, '0', '000') "salario soñado" FROM employees WHERE job_id = 'SA_MAN';
+
+-------------------------------------------------------------------------------
+		FUNCIONES MATEMATICAS
+		
+--ABS(n)
+SELECT ABS(-52) negative, ABS(52) positive, ABS(0) zero FROM dual;
+
+--ACOS(n)
+SELECT ACOS(-1), ACOS(0), ACOS(0.45) FROM dual;
+
+--ASIN(n), ATAN(n), COS(n), SIN(n), TAN(n)
+
+-- CEIL(n)
+SELECT CEIL(9.8), CEIL(-32.85), CEIL(0), CEIL(5) FROM dual;
+
+--ESP(n)
+SELECT EXP(1) "e" FROM dual;
+
+-- FLOOR(n)
+SELECT FLOOR(9.8), FLOOR(-32.85), FLOOR(137) FROM dual;
+
+-- LN(n)
+SELECT LN(2.7) FROM dual;
+
+-- POWER(n1, n2)
+SELECT POWER(2, 10), POWER(3, 3), POWER(5, 3), POWER(2, -3)
+
+-- SIGN(n)
+SELECT SIGN(-2.3), SIGN(0), SIGN(47) FROM dual;
+
+------------------------------------------------------------------------------
+		FUNCION TO CHAR
+
+-- TO_CHAR(expr[, fmt[, nlsparam]])
+SELECT TO_CHAR(10) FROM dual;
+SELECT TO_CHAR(000001) FROM dual;
+SELECT TO_CHAR(000001, '0999999') FROM dual;
+
+SELECT job_title, max_salary, TO_CHAR(max_salary, $99,999.99'), TO_CHAR(max_salary, '$9,999.99') FROM jobs where UPPER(job_title) LIKE '$PRESIDENT%';
+
+SELECT TO_CHAR(SYDATE) FROM dual;
+
+SELECT TO_CHAR(SYSDATE, 'Month') FROM dual;
+SELECT TO_CHAR(SYSDATE, 'MM') FROM dual;
+SELECT TO_CHAR(SYSDATE, 'Mon') FROM dual;
+SELECT TO_CHAR(SYSDATE, 'YEAR') FROM dual;
+SELECT TO_CHAR(SYSDATE, 'DAY') FROM dual;
+
+fmDD
+SELECT last_name TO_CHAR(hire_date, 'fmDD Month YYYY') "Hire date" FROM employees;
+
+SELECT TO_CHAR(SYSDATE, 'Day Ddspth, Month YYYY', 'nls_date_language=German') FROM dual;
+
+-------------------------------------------------------------------------------
+		FUNCION TO_DATE
+		
+-- TO_DATR(c[, fmt[, nslparam]])
+
+Modificar tipo de fecha (A nivel de session):
+ALTER SESSION SET nls_date_format = 'DD-MON-RR HH24:MI:SS';
+
+SELECT TO_DATE('25-DEC-2010') FROM dual;
+SELECT TO_DATE('25-DEC', 'DD-MON') FROM dual;
+SELECT TO_DATE('25-DEC-2010 18:03:45', 'DD-MON-YYYY H24:MI:SS') FROM dual;
+SELECT TO_DATE('30-SEP-2007', 'DD/MON/YY') FROM dual;
+SELEC TO_DATE('SEP-2007 13', 'MON/YYYY HH24') FROM dual;
+
+SELECT first_name, last_name, hire_date FROM employees WHERE hire_date > TO_DATE('01/12/2000', 'MM/DD/YYYY') ORDER BY hire_date;
+
+-------------------------------------------------------------------------------
+		FUNCIONES PARA FECHAS
+
+-- ADD_MONTHS(d, i)
+SELECT SYSDATE, ADD_MONTHS(SYSDATE, -1) anterior, ADD_MONTHS(SYSDATE, 12) siguiente FROM dual;
+
+SELECT MONTHS_BETWEEN('31/03/08', '30/09/08') f1,
+       ROUND(MONTHS_BETWEEN('11/03/08', '30/09/08'), 1) f2,
+       ROUND(MONTHS_BETWEEN('01/03/08', '30/09/08'), 1) f3,
+       ROUND(MONTHS_BETWEEN('31/03/08', '30/09/07'), 1) f4 FROM dual;
+
+SUMAR UN DIA
+SELECT SYSDATE, LAST_DAY(SYSDATE) fin_de_mes, LAST_DAY(SYSDATE) + 1 siguiente FROM dual;
+
+-- ROUND(d [,fmt])
+SELECT SYSDATE, ROUND(SYSDATE, 'HH24') ROUND_HOUR, ROUND(SYSDATE) ROUND_DATE, ROUND(SYSDATE, 'MM') NEW_MONTH, ROUND(SYSDATE, 'YY') NEW_YEAR FROM dual;
+
+--TRUNC(d [,fmt])
+SELECT SYSDATE, TRUNC(SYSDATE, 'HH24') TRUNC_HOUR, TRUNC(SYSDATE) TRUNC_DATE, TRUNC(SYSDATE, 'MM') NEW_MONTH, TRUNC(SYSDATE, 'YY') NEW_YEAR FROM dual;
+
+--------------------------------------------------------------------------------
+		FUNCIONES PARA DATOS NULOS
+
+-- NVL, NVL2, COALSCE
+
+-- NVL(x1, x2)
+SELECT last_name, NVL(department_id, 0) FROM employees ORDER BY 2;
+
+SELECT first_name, salary, commission_pct, salary + (salary * commission_pct) "Compensacion" FROM employess WHERE first_name LIKE 'T%';
+SELECT first_name, salary, NVL(commission_pct, 0), salary + (salary * NVL(commission_pct, 0)) "Compensacion" FROM employess WHERE first_name LIKE 'T%';
+
+-- NVL2(x1, x2, x3)
+SELECT first_name, salary, commission_pct, NVL2(commission_pct, salary + salary * commission_pct, salary) "Compensacion" FROM employess WHERE first_name LIKE 'T%';
+
+--COALSCE(lista)
+/* COALSCE(x1, x2, x3) */
+SELECT last_name, salary, commission_pct AS comm, COALESCE(salary + salary * commission_pct, salary + 100, 900) "Comisión" FROM employees WHERE last_name LIKE 'T%';
+
+-------------------------------------------------------------------------------
+		FUNCIONES ADICIONALES
+		
+-- DECODE(x, m1, r1, m2, r2, m3, r3...) 
+SELECT country_is, country_name, region_id, DECODE(region_id, 1, 'Europa', 2, 'America', 3, 'Asia', 'otro') Region FROM countries;
+
+ -- GREATEST(lista de expresiones)
+SELECT GREATEST('01-APR-08', '30-DIC-08', '20-ENE-10') FROM dual;
+
+SELECT GREATEST(345, 'xyz', 234) FROM dual; //PRODUCE UN ERROR POR QUE DEBE SER EL MISMO TIPO DE DATOS
+
+SELECT last_name, salary, GREATEST(salary * 0.15, 500) bono FROM employees WHERE department_id IN (30, 10) ORDER BY last_name;
+
+SELECT LEAST(SYSDATE, '15-MAR-2002', '17-JUN-2002') FROM dual;
+
+
+*****************************************************************************
+				GROUP BY
+				
+		FUNCION COUNT
+		
+-- COUNT(*, expresion)
+SELECT COUNT(*) FROM  employees;
+
+SELECT COUNT(commission_pct) FROM employees; (nota: no cuenta nulos)
+
+DISTINC
+SELECT COUNT(DISTINCT comiission_pct) FROM employees;
+
+ALL
+SELECT COUNT(ALL comiission_pct) FROM employees;
+
+SELECT COUNT(hire_date), COUNT(manager_id) FROM employees;
+
+SELECT COUNT(*), COUNT(DISTINCT NVL(department_id, 0)), COUNT(DISTINCT NVL(job_id, 0)) FROM employees;
+
+"Paises comenzando con A
+SELECT COUNT(*) "Paises comenzando con A" FROM countries WHERE country_name LIKE 'A%';
+SELECT country_name FROM countries WHERE country_name LIKE 'A%';
+
+-----------------------------------------------------------------------------
+		AVERAGE
+		
+-- AVG([DISTINCT|ALL] expresion)
+SELECT AVG(5) FROM employees; para constantes regresa el promedio
+
+SELECT AVG(salary) FROM employees;
+truncado
+SELECT TRUNC(AVG(salary)) FROM employees;
+
+SELECT AVG(DISTINC salary) FROM employees;
+truncado con un decimal
+SELECT TRUNC(AVG(DISTINC salary), 1) FROM employees;
+
+SELECT AVG(commission_pct) FROM employees;
+
+Promedio de años trabajados en departamento IT
+SELECT last_name, job_id, (SYSDATE -hire_date) / 365.25 Años trabajados" FROM employees WHERE job_id = 'IT_PROG';
+redondeado:
+SELECT last_name, job_id, ROUND((SYSDATE -hire_date) / 365.25, 1) Años trabajados" FROM employees WHERE job_id = 'IT_PROG';
+aplicando AVERAGE
+SELECT last_name, job_id, ROUND(AVG((SYSDATE -hire_date) / 365.25,1) Años trabajados" FROM employees WHERE job_id = 'IT_PROG';
+
+-----------------------------------------------------------------------------
+		SUM
+
+-- SUM([DISTINCT|ALL] expr);
+SELECT SUM(salary) FROM employees;
+
+SELECT SUM(2) FROM employees; NOTA: MULTIPLICA EL TOTAL X 2
+SELECT 2 * COUNT(*) FROM employees; NOTA: MULTIPLICA EL TOTAL X 2
+
+SELECT SUM(DISTINCT salary) FROM employees;
+
+SELECT SUM(commission_pct) FROM employees;
+SELECT SUM(DISTINCT commission_pct) FROM employees;
+
+SELECT SUM(SYSDATE - hire_date) / 365.25 "Total de años trabajados" FROM employees;
+SELECT ROUND(SUM(SYSDATE - hire_date) / 365.25), 2) "Total de años trabajados" FROM employees;
+
+SELECT SUM(hire_date) FROM employees; NOTA: OCURRE ERROR
+
+------------------------------------------------------------------------------
+		FUNCION MIN y MAX
+
+-- MIN,MAX([DISTINCT|ALL] expresion)
+SELECT MIN(commission_pct), MAX(commission_pct) FROM employees;
+
+SELECT MIN(start_date), MAX(end_date) FROM job_history;
+
+SELECT MIN(job_id), MAX(job_id) FROM employees;
+
+SELECT MIN(hire_date), MIN(salary), MAX(hire_date), MAX(salary) FROM employees WHRE job_id = 'SA_REP';
+
+calcular el promedio de la longitud de los nombres de los paises y redondear hacia adelante
+SELECT ROUND(AVG(LENGTH(country_name))) "promedio de longitudes" FROM countries;
+
+SELECT MIN(), MAX() FROM employees;
+SELECT MIN(), MAX() FROM employees;
+
+------------------------------------------------------------------------------
+		GROUP BY
+	
+agrupar promedio de salarios por departamento	
+SELECT ROUND(AVG(salary)), department_id FROM employees GROUP BY department_id ORDER BY 1 DESC;
+
+agrupar el numero de ampleados que tiene cada manager
+SELECT COUNT(*), manager_id FROM employees GROUP BY manager_id ORDER BY 1 DESC, 2 NULLS LAST;
+
+maximo salario y conteo de ampleados por cada departamento
+SELECT MAX(salary), COUNT(*) FROM employees GROUP BY department_id ORDER BY department_id;
+si queremos una columna con el departament_id :
+SELECT MAX(salary), COUNT(*), department_id FROM employees GROUP BY department_id ORDER BY department_id;
+
+numero de paises por region 
+SELECT COUNT(*), region_id FROM countries GROUP BY region_id; 
+ordenando:
+SELECT COUNT(*), region_id FROM countries GROUP BY region_id ORDER BY region_id ASC;
+
+empleados que an renunciado cada año:
+SELECT TO_CHAR(end_date, 'YYYY') "Año de renuncia", COUNT(*) "No de Empleados" FROM job_history GROUP BY TO_CHAR(end_date, 'YYYY') ORDER BY COUNT(*) DESC;
+
+SELECT end_date, COUNT(*) FROM job_history; INCORRECTO
+SELECT end_date, COUNT(*) FROM job_history GROUP BY end_date; CORRECTO
+ 
+SELECT end_date, start_date, COUNT(*) FROM job_history GROUP BY end_date; INCORRECTO
+SELECT end_date, start_date, COUNT(*) FROM job_history GROUP BY end_date, start_date; CORRECTO
+
+------------------------------------------------------------------------------
+		GROUP BY parte 2
+
+ver la suma de los porcenrtajes de comission agrupados por departamentos:
+SELECT department_id, SUM(commission_pct) FROM employees WHERE commission_pct IS NOT NULL GROUP BY department_id;
+
+SELECT department_id, jod_id, SUM(commission_pct) FROM employees WHERE commission_pct IS NOT NULL GROUP BY department_id, job_id;
+
+crear un reporte que contenga el numero de empleados que han dejado el trabajo agrupado por año en el cual se fueron , los trabajos que realizaban , resultado debe ser en orden descendente basado en el numero de e mpleados de cada grupo, año, job_id, No de emplados
+
+ SELECT TO_CHAR(end_date, 'YYYY'), job_id, COUNT(*) FROM job_history GROUP BY TO_CHAR(end_date, 'YYYY'), job_id ORDER BY COUNT(*) DESC;
+
+Seleccionar la longitud max y min del nombre de los empleados representantes de ventas:
+SELECT MAX(LENGTH(last_name)), MIN(LENGTH(last_name)) FROM employees WHERE job_id = 'SA_REP';
+ 
+
+NOTA: ORDER BY SIEMPRE VA AL FINAL
+
+--------------------------------------------------------------------------------
+		HAVING RESTRISCCIONES ENTRE GRUPOS
+
+SELECT department_id FROM job_history WHERE department_id IN (50, 60, 80, 110);
+
+ver conteo de empleado en el departamento que tuvieron un cambio de trabajo
+SELECT department_id, COUNT(*) FROM job_history WHERE department_id IN (50, 60, 80, 110) GROUP BY department_id;
+
+solo mostrat aquellos departamentos que solo tienen conteo mayor a 1
+SELECT department_id, COUNT(*) FROM job_history WHERE department_id IN (50, 60, 80, 110) AND COUNT(*) > 1 GROUP BY department_id; INCORRECTO
+SELECT department_id IN (50, 60, 80, 110) GROUP BY department_id HAVING COUNT(*) > 1; CORRECTO
+
+ORDEN DE HAVING
+SELECT department_id IN (50, 60, 80, 110) HAVING COUNT(*) > 1 GROUP BY department_id; 
+
+mostrat el promedio y conteo de empleados por cda trabajo:
+SELECT job_id, AVG(salary), COUNT (*) FROM employees GROUP BY job_id;
+mostrar solo aquellos que tengan un promedio mayor a 10000
+SELECT job_id, AVG(salary), COUNT (*) FROM employees GROUP BY job_id HAVING AVG(salary) > 10000 ORDER BY 2 DESC;
+
+condicion compuesta
+SELECT job_id, AVG(salary), COUNT (*) FROM employees GROUP BY job_id HAVING AVG(salary) > 10000 AND COUNT(*) > 1 ORDER BY 2 DESC;
+
+identificar los dias de la semana en los que 15 o mas miembros del staff fueron contratados el reporte debe tener dias y el No de empleados contratados en ellos.
+SELECT TO_CHAR(hire_date, 'DAY'), COUNT(*) FROM employees GROUP BY TO_CHAR(hire_date, 'DAY') HAVING COUNT(*) >= 15 ORDER BY COUNT(*);
+
+
+NOTA HAVING SOLO FUNCIONA CON GROUP BY
+
+*****************************************************************************
+				JOIN
+
+		INTRODUCCION A LOS JOINS
+
+
+-----------------------------------------------------------------------------
+		NATURAL JOIN
+		
+
+-----------------------------------------------------------------------------
+
+
+		
+
+*****************************************************************************
+*****************************************************************************
+*****************************************************************************
+https://www.youtube.com/watch?v=r8ytVA6xR6o
+
+sqlplus sys as sysdba
+Enter password:
+
+CREAR UN USUARIO U1
+SQL> CREATE USER U1 IDENTIFIED BY 0806;
+User created.
+SQL> GRANT CREATE SESSION TO U1;
+Grant succeeded.
+SQL> GRANT SYSDBA TO U1;
+Grant succeeded.
+SQL> exit
+
+sqlplus u1 sysdba
+nter password: 0806
+SQL> conn u1;
+Connected.
+SQL> exit
+
+
+DAR PERMISOS CONNECT Y REOURCE A U1
+sqlplus sys as sysdba
+Enter password:
+
+SQL> GRANT CONNECT TO U1;
+SQL> GRANT RESOURCE TO U1;
+
+ENTRAR A SQL PLUS COMO U1 (USUARIO1)
+sqlplus u1 as sysdba
+Enter password:
+SQL> conn U1;
+Enter password:
+Connected.
+
+
+SQL> 
+SQL>
+SQL>
+SQL>
+SQL>
+SQL>
+SQL>
+
+*****************************************************************************
